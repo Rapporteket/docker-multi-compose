@@ -1,0 +1,38 @@
+version: '3.3'
+
+services:
+  db3:
+    image: mysql:5.7
+    command: --innodb-log-file-size=500M --innodb_strict_mode=0
+    restart: "no"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+
+  dev3:
+    depends_on:
+      - db3
+    image: rapporteket/ablanor-dev:nightly
+    volumes:
+      - ~/.ssh:/home/rstudio/.ssh
+      - ~/.gitconfig:/home/rstudio/.gitconfig
+    ports:
+      - "8789:8787"
+      - "3840:3838"
+    dns:
+      - 8.8.8.8
+    restart: "no"
+    environment:
+      PASSWORD: password
+      DB_HOST: db3
+      DB_USER: root
+      DB_PASS: root
+
+  adminer3:
+    depends_on:
+      - db3
+    image: adminer
+    restart: "no"
+    environment:
+      ADMINER_PLUGINS: frames
+    ports:
+      - 8890:8080
